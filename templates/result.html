@@ -1,0 +1,847 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hasil Rekomendasi Skincare</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Nunito:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      :root {
+        --bg: #1a1118;
+        --surface: #241b22;
+        --card: #2d2230;
+        --card2: #332538;
+        --accent: #e07bb5;
+        --accent2: #a855d4;
+        --gold: #f0c060;
+        --text: #f5eef8;
+        --muted: #9d8aaa;
+        --border: #3d2e42;
+        --good: #6fcfa0;
+        --warn: #f0a050;
+        --star: #f0c060;
+        --info: #60b4f0;
+      }
+
+      body {
+        font-family: "Nunito", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        padding: 48px 16px 80px;
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background:
+          radial-gradient(
+            ellipse 50% 40% at 90% 5%,
+            #a855d418 0%,
+            transparent 60%
+          ),
+          radial-gradient(
+            ellipse 40% 35% at 5% 90%,
+            #e07bb510 0%,
+            transparent 60%
+          );
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .page-wrap {
+        position: relative;
+        z-index: 1;
+        max-width: 800px;
+        margin: 0 auto;
+      }
+
+      /* ── Back ── */
+      .back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        color: var(--muted);
+        padding: 8px 20px;
+        border-radius: 100px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        text-decoration: none;
+        margin-bottom: 32px;
+        transition: all 0.2s;
+      }
+      .back-btn:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+
+      /* ── Header ── */
+      .page-header {
+        margin-bottom: 36px;
+      }
+      .page-header h1 {
+        font-family: "Playfair Display", serif;
+        font-size: clamp(1.6rem, 4vw, 2.4rem);
+        line-height: 1.2;
+      }
+      .page-header h1 em {
+        font-style: italic;
+        color: var(--accent);
+      }
+      .page-header .meta {
+        margin-top: 10px;
+        font-size: 0.82rem;
+        color: var(--muted);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .meta-tag {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 100px;
+        padding: 3px 12px;
+        font-size: 0.76rem;
+        font-weight: 600;
+      }
+      .meta-tag.type {
+        border-color: var(--accent2);
+        color: var(--accent2);
+      }
+      .meta-tag.concern {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+
+      /* ── Slot heading ── */
+      .slot-heading {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 32px 0 12px;
+      }
+      .slot-heading h2 {
+        font-family: "Playfair Display", serif;
+        font-size: 1.1rem;
+        white-space: nowrap;
+      }
+      .slot-line {
+        flex: 1;
+        height: 1px;
+        background: var(--border);
+      }
+
+      /* ── Card ── */
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 24px;
+        margin-bottom: 16px;
+        transition:
+          border-color 0.2s,
+          box-shadow 0.2s;
+      }
+      .card:hover {
+        border-color: #5d3a6a;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      }
+
+      /* ── Card top ── */
+      .card-top {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        align-items: flex-start;
+      }
+      .product-brand {
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--accent2);
+        margin-bottom: 4px;
+      }
+      .product-name {
+        font-family: "Playfair Display", serif;
+        font-size: 1.15rem;
+        line-height: 1.3;
+      }
+      .meta-pills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 10px;
+      }
+      .pill {
+        font-size: 0.72rem;
+        font-weight: 600;
+        padding: 3px 10px;
+        border-radius: 100px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        color: var(--muted);
+      }
+      .pill.price {
+        background: #1a2e20;
+        border-color: #3a6040;
+        color: var(--good);
+      }
+
+      /* ── Rating box (top-right) ── */
+      .rating-box {
+        text-align: right;
+        flex-shrink: 0;
+      }
+      .stars {
+        color: var(--star);
+        font-size: 0.95rem;
+        letter-spacing: 1px;
+      }
+      .rating-num {
+        font-size: 0.75rem;
+        color: var(--muted);
+        margin-top: 2px;
+      }
+
+      /* ── Divider ── */
+      .divider {
+        border: none;
+        border-top: 1px solid var(--border);
+        margin: 18px 0;
+      }
+
+      /* ── Reason box ── */
+      .reason-box {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-left: 3px solid var(--accent2);
+        border-radius: 12px;
+        padding: 14px 16px;
+        margin-bottom: 14px;
+      }
+      .reason-label {
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--accent2);
+        margin-bottom: 10px;
+      }
+      .reason-line {
+        font-size: 0.82rem;
+        line-height: 1.6;
+        color: var(--muted);
+        margin-bottom: 6px;
+      }
+      .reason-line:last-child {
+        margin-bottom: 0;
+      }
+      .reason-line strong {
+        color: var(--text);
+      }
+      .reason-line em {
+        font-style: normal;
+        color: var(--good);
+        font-weight: 600;
+      }
+      .reason-line.warn em {
+        color: var(--warn);
+      }
+
+      /* ── Matched ingredients pills ── */
+      .matched-ings {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 14px;
+      }
+      .ing-match {
+        background: #1e2e20;
+        border: 1px solid #3a6040;
+        color: var(--good);
+        font-size: 0.72rem;
+        font-weight: 700;
+        padding: 3px 10px;
+        border-radius: 100px;
+      }
+
+      /* ── ★ COMMUNITY REVIEWS SECTION ── */
+      .reviews-section {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 16px 18px;
+        margin-bottom: 14px;
+      }
+      .reviews-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 14px;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .reviews-title {
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--gold);
+      }
+      .reviews-summary {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .big-rating {
+        font-family: "Playfair Display", serif;
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--gold);
+        line-height: 1;
+      }
+      .big-rating-sub {
+        font-size: 0.72rem;
+        color: var(--muted);
+        line-height: 1.5;
+      }
+      .big-stars {
+        color: var(--star);
+        font-size: 1.05rem;
+        letter-spacing: 2px;
+      }
+
+      /* Rating distribution bar chart */
+      .rating-dist {
+        width: 100%;
+        margin-bottom: 14px;
+      }
+      .dist-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 5px;
+        font-size: 0.72rem;
+      }
+      .dist-label {
+        color: var(--star);
+        width: 14px;
+        text-align: right;
+        flex-shrink: 0;
+        font-weight: 700;
+      }
+      .dist-bar-wrap {
+        flex: 1;
+        height: 7px;
+        background: var(--border);
+        border-radius: 100px;
+        overflow: hidden;
+      }
+      .dist-bar {
+        height: 100%;
+        background: linear-gradient(90deg, var(--gold), var(--accent));
+        border-radius: 100px;
+        transition: width 0.4s ease;
+      }
+      .dist-count {
+        color: var(--muted);
+        width: 28px;
+        text-align: right;
+        flex-shrink: 0;
+      }
+
+      /* Recommend badge */
+      .recommend-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        background: #1e2e20;
+        border: 1px solid #3a6040;
+        color: var(--good);
+        font-size: 0.75rem;
+        font-weight: 700;
+        padding: 4px 12px;
+        border-radius: 100px;
+        margin-bottom: 14px;
+      }
+
+      /* Sample review cards */
+      .sample-reviews {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .review-card {
+        background: var(--card2);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 11px 14px;
+      }
+      .review-card-top {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 6px;
+        flex-wrap: wrap;
+      }
+      .review-stars {
+        color: var(--star);
+        font-size: 0.82rem;
+        letter-spacing: 1px;
+      }
+      .review-skin-badge {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        color: var(--muted);
+        font-size: 0.65rem;
+        font-weight: 600;
+        padding: 2px 8px;
+        border-radius: 100px;
+      }
+      .review-text {
+        font-size: 0.8rem;
+        color: var(--muted);
+        line-height: 1.55;
+        font-style: italic;
+      }
+
+      .no-reviews-note {
+        font-size: 0.78rem;
+        color: var(--muted);
+        font-style: italic;
+        padding: 6px 0;
+      }
+
+      /* ── INGREDIENTS SECTION ── */
+      .ing-section {
+        background: var(--card2);
+        border-radius: 12px;
+        padding: 14px 16px;
+      }
+      .ing-label {
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 12px;
+      }
+      .ing-legend {
+        display: flex;
+        gap: 14px;
+        margin-bottom: 10px;
+        flex-wrap: wrap;
+      }
+      .ing-legend-item {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 0.68rem;
+        color: var(--muted);
+      }
+      .legend-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+      .legend-dot.matched {
+        background: var(--good);
+      }
+      .legend-dot.normal {
+        background: var(--border);
+      }
+
+      .ing-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+      }
+
+      /* Normal ingredient tag */
+      .ing-tag {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        color: var(--muted);
+        font-size: 0.72rem;
+        padding: 3px 9px;
+        border-radius: 100px;
+        cursor: default;
+        transition:
+          border-color 0.15s,
+          color 0.15s;
+      }
+
+      /* Matched / highlighted ingredient */
+      .ing-tag.highlight {
+        background: #1e2e20;
+        border-color: #3a6040;
+        color: var(--good);
+        font-weight: 700;
+        cursor: help;
+        position: relative;
+      }
+      .ing-tag.highlight::after {
+        content: "★";
+        font-size: 0.6rem;
+        margin-left: 3px;
+        vertical-align: super;
+        color: var(--gold);
+      }
+
+      /* Tooltip for highlighted ingredients */
+      .ing-tooltip-wrap {
+        position: relative;
+        display: inline-block;
+      }
+      .ing-tooltip {
+        display: none;
+        position: absolute;
+        bottom: calc(100% + 6px);
+        left: 50%;
+        transform: translateX(-50%);
+        background: #1a2e20;
+        border: 1px solid #3a6040;
+        color: var(--good);
+        font-size: 0.72rem;
+        font-weight: 600;
+        padding: 6px 10px;
+        border-radius: 8px;
+        white-space: nowrap;
+        z-index: 100;
+        pointer-events: none;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+        max-width: 220px;
+        white-space: normal;
+        text-align: center;
+        line-height: 1.4;
+      }
+      .ing-tooltip::after {
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        border: 5px solid transparent;
+        border-top-color: #3a6040;
+      }
+      .ing-tooltip-wrap:hover .ing-tooltip {
+        display: block;
+      }
+
+      /* Show-more button */
+      .ing-tag.extra-hidden {
+        display: none;
+      }
+      .ing-more {
+        background: transparent;
+        border: 1px dashed var(--accent2);
+        color: var(--accent2);
+        font-size: 0.72rem;
+        font-weight: 700;
+        padding: 3px 9px;
+        border-radius: 100px;
+        cursor: pointer;
+        font-family: "Nunito", sans-serif;
+        transition: all 0.18s;
+      }
+      .ing-more:hover {
+        background: var(--accent2);
+        color: #fff;
+        border-style: solid;
+      }
+
+      /* ── Empty state ── */
+      .empty-state {
+        text-align: center;
+        padding: 80px 20px;
+      }
+      .empty-state h2 {
+        font-family: "Playfair Display", serif;
+        font-size: 1.6rem;
+        margin-bottom: 10px;
+      }
+      .empty-state p {
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page-wrap">
+      <a href="/" class="back-btn">← Ubah Pencarian</a>
+
+      <div class="page-header">
+        <h1>Rekomendasi untuk<br /><em>{{ skin_type }} Skin</em></h1>
+        <div class="meta">
+          <span class="meta-tag type">{{ skin_type }}</span>
+          {% if brand and brand != "All" %}<span class="meta-tag"
+            >{{ brand }}</span
+          >{% endif %} {% for c in user_concerns %}<span
+            class="meta-tag concern"
+            >{{ c }}</span
+          >{% endfor %} {% if not user_concerns %}<span
+            class="meta-tag"
+            style="color: var(--muted)"
+            >Tanpa filter concern</span
+          >{% endif %}
+        </div>
+      </div>
+
+      {% if recommendations %} {% set ns = namespace(current_slot='') %} {% for
+      p in recommendations %} {% if p.slot_label != ns.current_slot %} {% set
+      ns.current_slot = p.slot_label %}
+      <div class="slot-heading">
+        <h2>{{ p.slot_label }}</h2>
+        <div class="slot-line"></div>
+      </div>
+      {% endif %}
+
+      <div class="card">
+        <!-- ── Top row: name + rating ── -->
+        <div class="card-top">
+          <div>
+            <div class="product-brand">{{ p.brand_name }}</div>
+            <div class="product-name">{{ p.product_name }}</div>
+            <div class="meta-pills">
+              {% if p.category and p.category != '-' %}<span class="pill"
+                >{{ p.category }}</span
+              >{% endif %} {% if p.price and p.price != '-' %}<span
+                class="pill price"
+                >{{ p.price }}</span
+              >{% endif %}
+            </div>
+          </div>
+          <div class="rating-box">
+            {% if p.rating %}
+            <div class="stars">
+              {% for i in range(5) %}{% if i < p.rating_stars %}★{% else %}☆{%
+              endif %}{% endfor %}
+            </div>
+            <div class="rating-num">{{ "%.1f"|format(p.rating) }} / 5.0</div>
+            <div class="rating-num" style="font-size: 0.68rem; margin-top: 2px">
+              {{ p.reviews }} ulasan produk
+            </div>
+            {% else %}
+            <div class="rating-num" style="font-size: 0.7rem">
+              Belum ada<br />rating
+            </div>
+            {% endif %}
+          </div>
+        </div>
+
+        <hr class="divider" />
+
+        <!-- ── Reason why recommended ── -->
+        {% if p.reason_lines %}
+        <div class="reason-box">
+          <div class="reason-label">💡 Mengapa Direkomendasikan</div>
+          {% for line in p.reason_lines %}
+          <div class="reason-line {% if '⚠' in line %}warn{% endif %}">
+            {{ line|safe }}
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- ── Matched ingredient summary pills ── -->
+        {% if p.matched_ings %}
+        <div class="matched-ings">
+          {% for ing in p.matched_ings %}
+          <span class="ing-match">✓ {{ ing|title }}</span>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- ══════════════════════════════════════════════════
+                 COMMUNITY REVIEWS SECTION
+            ══════════════════════════════════════════════════ -->
+        {% set rs = p.review_stats %}
+        <div class="reviews-section">
+          <div class="reviews-header">
+            <div class="reviews-title">⭐ Ulasan Komunitas</div>
+            {% if rs %}
+            <div class="reviews-summary">
+              <div>
+                <div class="big-rating">{{ "%.1f"|format(rs.avg_rating) }}</div>
+                <div class="big-stars">
+                  {% for i in range(5) %}{% if i < (rs.avg_rating|round|int)
+                  %}★{% else %}☆{% endif %}{% endfor %}
+                </div>
+              </div>
+              <div class="big-rating-sub">
+                dari
+                <strong style="color: var(--text)"
+                  >{{ rs.review_count|int }}</strong
+                >
+                ulasan<br />
+                pengguna nyata
+              </div>
+            </div>
+            {% endif %}
+          </div>
+
+          {% if rs %}
+          <!-- Recommend percentage -->
+          {% if rs.recommend_pct is not none %}
+          <div class="recommend-badge">
+            👍 {{ "%.0f"|format(rs.recommend_pct) }}% pengguna merekomendasikan
+            produk ini
+          </div>
+          {% endif %}
+
+          <!-- Rating distribution bars -->
+          {% if rs.review_count > 0 %}
+          <div class="rating-dist">
+            {% set total = rs.review_count %} {% for star in [5, 4, 3, 2, 1] %}
+            {% set count = rs.rating_dist.get(star, 0) %} {% set pct = (count /
+            total * 100) if total > 0 else 0 %}
+            <div class="dist-row">
+              <span class="dist-label">{{ star }}</span>
+              <div class="dist-bar-wrap">
+                <div class="dist-bar" style="width: {{ pct|round(1) }}%"></div>
+              </div>
+              <span class="dist-count">{{ count }}</span>
+            </div>
+            {% endfor %}
+          </div>
+          {% endif %}
+
+          <!-- Sample review cards -->
+          {% if rs.sample_reviews %}
+          <div class="sample-reviews">
+            {% for rv in rs.sample_reviews %}
+            <div class="review-card">
+              <div class="review-card-top">
+                <span class="review-stars"
+                  >{% for i in range(5) %}{% if i < rv.rating %}★{% else %}☆{%
+                  endif %}{% endfor %}</span
+                >
+                {% if rv.skin_type and rv.skin_type != 'Unknown' %}
+                <span class="review-skin-badge">Kulit {{ rv.skin_type }}</span>
+                {% endif %}
+              </div>
+              <div class="review-text">"{{ rv.text }}"</div>
+            </div>
+            {% endfor %}
+          </div>
+          {% endif %} {% else %}
+          <div class="no-reviews-note">
+            Data ulasan komunitas belum tersedia untuk produk ini.
+          </div>
+          {% endif %}
+        </div>
+        <!-- end reviews-section -->
+
+        <!-- ══════════════════════════════════════════════════
+                 INGREDIENTS SECTION — with annotation & tooltip
+            ══════════════════════════════════════════════════ -->
+        <div class="ing-section">
+          <div class="ing-label">🌿 Ingredients</div>
+
+          {% if p.annotated_ingredients %}
+          <!-- Legend -->
+          <div class="ing-legend">
+            <div class="ing-legend-item">
+              <div class="legend-dot matched"></div>
+              Cocok untuk kondisi kulitmu
+            </div>
+            <div class="ing-legend-item">
+              <div class="legend-dot normal"></div>
+              Ingredients lainnya
+            </div>
+          </div>
+
+          {% set pid = loop.index %}
+          <div class="ing-list" id="ing-{{ pid }}">
+            {% for ing_item in p.annotated_ingredients %} {% set hidden_class =
+            'extra-hidden' if loop.index > 14 else '' %} {% if
+            ing_item.is_matched %}
+            <span
+              class="ing-tooltip-wrap {{ hidden_class }}"
+              data-pid="{{ pid }}"
+            >
+              <span class="ing-tag highlight" title="{{ ing_item.benefit }}"
+                >{{ ing_item.text }}</span
+              >
+              {% if ing_item.benefit %}
+              <span class="ing-tooltip">{{ ing_item.benefit }}</span>
+              {% endif %}
+            </span>
+            {% else %}
+            <span class="ing-tag {{ hidden_class }}" data-pid="{{ pid }}"
+              >{{ ing_item.text }}</span
+            >
+            {% endif %} {% endfor %} {% if p.annotated_ingredients|length > 14
+            %}
+            <button
+              class="ing-more"
+              id="btn-{{ pid }}"
+              data-pid="{{ pid }}"
+              data-total="{{ p.annotated_ingredients|length }}"
+              onclick="toggleIng({{ pid }}, {{ p.annotated_ingredients|length }})"
+            >
+              +{{ p.annotated_ingredients|length - 14 }} lagi
+            </button>
+            {% endif %}
+          </div>
+
+          {% else %}
+          <p
+            style="font-size: 0.82rem; color: var(--muted); font-style: italic"
+          >
+            Data ingredients tidak tersedia
+          </p>
+          {% endif %}
+        </div>
+        <!-- end ing-section -->
+      </div>
+      <!-- end card -->
+      {% endfor %} {% else %}
+      <div class="empty-state">
+        <h2>Tidak ada produk ditemukan</h2>
+        <p>Coba ubah filter, lalu cari lagi.</p>
+        <a
+          href="/"
+          class="back-btn"
+          style="margin-top: 20px; display: inline-flex"
+          >← Kembali</a
+        >
+      </div>
+      {% endif %}
+    </div>
+    <!-- end page-wrap -->
+
+    <script>
+      function toggleIng(pid, total) {
+        const wrap = document.getElementById("ing-" + pid);
+        const btn = document.getElementById("btn-" + pid);
+        // Select both plain tags and tooltip wrappers with data-pid
+        const extras = wrap.querySelectorAll("[data-pid='" + pid + "']");
+        const open = btn.dataset.open !== "1";
+        extras.forEach((el) => {
+          el.classList.toggle("extra-hidden", !open);
+          el.classList.toggle("extra-visible", open);
+        });
+        btn.textContent = open ? "Sembunyikan" : "+" + (total - 14) + " lagi";
+        btn.dataset.open = open ? "1" : "0";
+      }
+    </script>
+  </body>
+</html>
