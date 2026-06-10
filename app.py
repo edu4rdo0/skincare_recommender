@@ -216,10 +216,6 @@ _review_stats: dict                    = {}
 
 
 def _load_review_stats() -> dict:
-    """
-    Load review CSV dan hitung statistik per produk.
-    Dipanggil sekali saat startup.
-    """
     dfs = []
     for fpath in REVIEW_FILES:
         if os.path.exists(fpath):
@@ -289,7 +285,6 @@ def _load_review_stats() -> dict:
 
 
 def load_data() -> pd.DataFrame:
-    """Load, filter skincare only, dan preprocess produk + review stats."""
     global _df, _tfidf_matrix, _vectorizer, _review_stats
     if _df is not None:
         return _df
@@ -423,8 +418,9 @@ def is_sunscreen(row):
     return any(kw in combined for kw in ["sunscreen", "spf", "sun protection", "uv"])
 
 
-def fill_slots(scored_df, concerns, skin_type):
-    used_indices: set[int] = set()
+def fill_slots(scored_df, concerns, skin_type, exclude_indices=None):
+    """Fill routine slots, optionally excluding already-used indices (wished products)."""
+    used_indices: set[int] = set(exclude_indices or [])
     sunscreen_count = 0
     result = {}
 
@@ -458,6 +454,98 @@ def fill_slots(scored_df, concerns, skin_type):
 
         result[slot_name] = picked
     return result
+
+
+# ---------------------------------------------------------------------------
+# ★ WISHED PRODUCT — Check compatibility
+# ---------------------------------------------------------------------------
+
+# Batas skor minimum agar produk dianggap "compatible"
+WISHED_COMPATIBILITY_THRESHOLD = 0.10
+
+# Batas maksimum bahan "avoid" yang masih ditoleransi
+WISHED_AVOID_TOLERANCE = 0.20
+
+
+def check_wished_product(product_id_str: str, skin_type: str, concerns: list[str]) -> dict:
+    """
+    Cek apakah produk pilihan user kompatibel dengan profil kulit mereka.
+
+    Returns dict dengan keys:
+        found        : bool — apakah produk ditemukan di dataset
+        compatible   : bool — apakah produk cocok untuk kulit user
+        product      : dict|None — data produk (jika found)
+        warnings     : list[str] — daftar peringatan ingredients
+        match_score  : float — skor kecocokan 0–1
+        avoid_matched: list[str] — bahan yang sebaiknya dihindari user
+    """
+    df = load_data()
+
+    # Cari produk berdasarkan product_id
+    matches = df[df["product_id"] == product_id_str]
+    if matches.empty:
+        return {"found": False, "compatible": False, "product": None,
+                "warnings": [], "match_score": 0.0, "avoid_matched": []}
+
+    row = matches.iloc[0]
+    idx = matches.index[0]
+
+    ingredients = row["ingredients"]
+
+    # Hitung boost score
+    boost_ings, avoid_ings, highlight_terms = compute_concern_terms(concerns, skin_type)
+    need_score = compute_need_score(row, boost_ings, avoid_ings, highlight_terms)
+
+    # Cek bahan yang harus dihindari
+    avoid_matched = [ing for ing in avoid_ings if ing in ingredients]
+
+    # Hitung avoid penalty ratio
+    avoid_penalty = _penalty_score(ingredients, avoid_ings)
+
+    # Compatible jika:
+    # - need_score cukup tinggi ATAU
+    # - tidak ada bahan berbahaya yang signifikan
+    compatible = (need_score >= WISHED_COMPATIBILITY_THRESHOLD) and (avoid_penalty <= WISHED_AVOID_TOLERANCE)
+
+    # Format produk
+    formatted = format_product(row, idx, concerns)
+    formatted["_skin_type"] = skin_type
+
+    # Tambah review stats
+    pid_str = str(row.get("product_id", ""))
+    formatted["review_stats"] = _review_stats.get(pid_str, None)
+
+    # Generate reason lines
+    from flask import has_request_context
+    reason_lines = generate_scientific_reason_lines(formatted, concerns, skin_type)
+
+    # Buat peringatan spesifik per bahan yang harus dihindari
+    warnings = []
+    AVOID_EXPLANATION = {
+        "fragrance":        "dapat memicu iritasi pada kulit sensitif",
+        "parfum":           "dapat memicu iritasi pada kulit sensitif",
+        "alcohol denat":    "dapat mengeringkan dan mengiritasi kulit",
+        "sd alcohol":       "dapat mengeringkan lapisan kulit",
+        "essential oil":    "berpotensi memicu reaksi alergi",
+        "coconut oil":      "bersifat comedogenic, dapat menyumbat pori",
+        "isopropyl myristate": "bersifat comedogenic, berisiko memicu jerawat",
+        "lanolin":          "dapat menyumbat pori pada kulit berminyak",
+        "menthol":          "dapat memicu sensasi perih pada kulit sensitif",
+        "mineral oil":      "bersifat oklusi berat, kurang ideal untuk kulit berminyak",
+    }
+    for ing in avoid_matched:
+        explanation = AVOID_EXPLANATION.get(ing, "perlu diperhatikan untuk jenis kulitmu")
+        warnings.append(f"{ing.title()} — {explanation}")
+
+    return {
+        "found":         True,
+        "compatible":    compatible,
+        "product":       formatted,
+        "reason_lines":  reason_lines,
+        "warnings":      warnings,
+        "match_score":   round(need_score, 3),
+        "avoid_matched": avoid_matched,
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -555,7 +643,7 @@ def format_product(row, idx, concerns):
 # Main Entry Point
 # ---------------------------------------------------------------------------
 
-def get_recommendations(skin_type, concerns, brand=""):
+def get_recommendations(skin_type, concerns, brand="", wished_product_id=""):
     df = load_data()
     skin_type = skin_type.lower().strip() if skin_type else "normal"
     concerns  = [c.lower().strip() for c in concerns if c] if concerns else []
@@ -565,12 +653,29 @@ def get_recommendations(skin_type, concerns, brand=""):
     scored_df = scored_df.copy()
     scored_df["_skin_type"] = skin_type
 
-    slots = fill_slots(scored_df, concerns, skin_type)
+    # ── Proses produk pilihan user ──────────────────────────────────────────
+    wished_result = None
+    exclude_indices = []
+
+    if wished_product_id and wished_product_id.strip():
+        wished_result = check_wished_product(wished_product_id.strip(), skin_type, concerns)
+        if wished_result["found"] and wished_result["compatible"]:
+            # Exclude dari slot biasa supaya tidak dobel
+            exclude_indices = [wished_result["product"]["product_id"]]
+
+    # ── Fill routine slots (tanpa produk pilihan jika sudah compatible) ─────
+    slots = fill_slots(scored_df, concerns, skin_type, exclude_indices=exclude_indices)
+
     total_recs = sum(len(v) for v in slots.values())
 
     return {
-        "status": "success", "skin_type": skin_type, "concerns": concerns, "brand": brand,
-        "summary": {"total_recommendations": total_recs, "slots_filled": sum(1 for v in slots.values() if v)},
+        "status":        "success",
+        "skin_type":     skin_type,
+        "concerns":      concerns,
+        "brand":         brand,
+        "wished_result": wished_result,
+        "summary":       {"total_recommendations": total_recs,
+                          "slots_filled": sum(1 for v in slots.values() if v)},
         "routine": {
             sn: {"label": SLOT_LABELS.get(sn, sn.replace("_", " ").title()), "products": prods}
             for sn, prods in slots.items()
@@ -641,10 +746,28 @@ def index():
     try:
         df = load_data()
         brands = sorted([b.title() for b in df["brand_name"].dropna().unique() if b.strip()])
+        # Untuk dropdown produk: kirim list (product_id, display_name) — max 2000 produk teratas by rating
+        products_for_dropdown = (
+            df.sort_values("rating", ascending=False)
+            .head(2000)[["product_id", "product_name", "brand_name"]]
+            .drop_duplicates(subset=["product_id"])
+            .assign(
+                display=lambda d: d["brand_name"].str.title() + " — " + d["product_name"].str.title()
+            )
+            [["product_id", "display"]]
+            .to_dict("records")
+        )
     except Exception as exc:
         logger.error(f"Error loading brands: {exc}")
         brands = ["The Ordinary","CeraVe","La Roche-Posay","Paula's Choice","Cosrx"]
-    return render_template("index.html", concerns=CONCERN_OPTIONS, brands=brands)
+        products_for_dropdown = []
+
+    return render_template(
+        "index.html",
+        concerns=CONCERN_OPTIONS,
+        brands=brands,
+        products_for_dropdown=products_for_dropdown,
+    )
 
 
 @app.route("/recommend", methods=["POST"])
@@ -652,45 +775,49 @@ def recommend():
     try:
         is_json = request.is_json or (request.content_type == "application/json")
         if is_json:
-            data      = request.get_json(force=True, silent=True) or {}
-            skin_type = data.get("skin_type", "normal")
-            concerns  = data.get("concerns", [])
-            brand     = data.get("brand", "")
+            data             = request.get_json(force=True, silent=True) or {}
+            skin_type        = data.get("skin_type", "normal")
+            concerns         = data.get("concerns", [])
+            brand            = data.get("brand", "")
+            wished_product_id = data.get("wished_product_id", "")
         else:
-            skin_type = request.form.get("skin_type", "Normal")
-            concerns  = request.form.getlist("concerns")
-            brand     = request.form.get("brand", "All")
-            if brand == "All": brand = ""
+            skin_type        = request.form.get("skin_type", "Normal")
+            concerns         = request.form.getlist("concerns")
+            brand            = request.form.get("brand", "").strip()
+            wished_product_id = request.form.get("wished_product_id", "")
 
         if not isinstance(concerns, list):
             concerns = [concerns]
 
-        result = get_recommendations(skin_type, concerns, brand)
+        result = get_recommendations(skin_type, concerns, brand, wished_product_id)
 
         if is_json:
             return jsonify(result), 200
 
+        # ── Format routine products ──────────────────────────────────────────
         recs_flat = []
         for slot_name, slot_data in result["routine"].items():
             slot_label = slot_data["label"]
             for p in slot_data["products"]:
-                p_copy = p.copy()
+                p_copy = _enrich_product_for_template(p, concerns, skin_type)
                 p_copy["slot_label"] = slot_label
-                p_copy["category"]   = p.get("secondary_category", "-")
-
-                price = p.get("price_usd", 0)
-                p_copy["price"] = f"${price:.2f}" if price > 0 else "-"
-
-                rating = p.get("rating", 0)
-                p_copy["rating_stars"] = int(round(rating))
-
-                p_copy["reason_lines"] = generate_scientific_reason_lines(p, concerns, skin_type)
-                p_copy["matched_ings"] = p.get("matched_ingredients", [])
-
-                pid_str = str(p.get("product_id_str", p.get("product_id", "")))
-                p_copy["review_stats"] = _review_stats.get(pid_str, None)
-
                 recs_flat.append(p_copy)
+
+        # ── Format wished product ────────────────────────────────────────────
+        wished_display = None
+        if result.get("wished_result"):
+            wr = result["wished_result"]
+            if wr["found"]:
+                p = wr["product"]
+                p_copy = _enrich_product_for_template(p, concerns, skin_type)
+                p_copy["reason_lines"]  = wr.get("reason_lines", [])
+                p_copy["warnings"]      = wr.get("warnings", [])
+                p_copy["match_score"]   = wr.get("match_score", 0)
+                p_copy["compatible"]    = wr.get("compatible", False)
+                wished_display = p_copy
+            else:
+                # Produk tidak ditemukan sama sekali di dataset
+                wished_display = {"found": False}
 
         user_concern_labels = [CONCERN_OPTIONS.get(c, c.title()) for c in concerns if c]
 
@@ -700,6 +827,7 @@ def recommend():
             brand=brand.title() if brand else "Semua Brand",
             user_concerns=user_concern_labels,
             recommendations=recs_flat,
+            wished=wished_display,
         )
 
     except Exception as exc:
@@ -707,6 +835,26 @@ def recommend():
         if request.is_json or (request.content_type == "application/json"):
             return jsonify({"status": "error", "message": str(exc)}), 500
         return render_template("result.html", recommendations=[], error=str(exc))
+
+
+def _enrich_product_for_template(p: dict, concerns: list, skin_type: str) -> dict:
+    """Tambah field display untuk template result.html."""
+    p_copy = p.copy()
+    p_copy["category"]      = p.get("secondary_category", "-")
+
+    price = p.get("price_usd", 0)
+    p_copy["price"]         = f"${price:.2f}" if price > 0 else "-"
+
+    rating = p.get("rating", 0)
+    p_copy["rating_stars"]  = int(round(rating))
+
+    p_copy["reason_lines"]  = generate_scientific_reason_lines(p, concerns, skin_type)
+    p_copy["matched_ings"]  = p.get("matched_ingredients", [])
+
+    pid_str = str(p.get("product_id_str", p.get("product_id", "")))
+    p_copy["review_stats"]  = _review_stats.get(pid_str, None)
+
+    return p_copy
 
 
 @app.route("/health")

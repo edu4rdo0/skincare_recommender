@@ -41,7 +41,6 @@
         padding: 48px 16px 80px;
       }
 
-      /* ── Ambient background ── */
       body::before {
         content: "";
         position: fixed;
@@ -92,7 +91,6 @@
         font-family: "Playfair Display", serif;
         font-size: clamp(2rem, 6vw, 3rem);
         line-height: 1.15;
-        color: var(--text);
       }
       .hero h1 em {
         font-style: italic;
@@ -217,15 +215,15 @@
         color: var(--text);
       }
 
-      /* ── Brand select ── */
-      .brand-select {
+      /* ── Select (brand & wished product) ── */
+      .styled-select {
         width: 100%;
         padding: 12px 16px;
         background: var(--surface);
         border: 1.5px solid var(--border);
         border-radius: 12px;
         font-family: "Nunito", sans-serif;
-        font-size: 0.9rem;
+        font-size: 0.88rem;
         color: var(--text);
         appearance: none;
         background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239d8aaa' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
@@ -235,12 +233,165 @@
         margin-bottom: 28px;
         transition: border-color 0.2s;
       }
-      .brand-select:focus {
+      .styled-select:focus {
         outline: none;
         border-color: var(--accent);
       }
-      .brand-select option {
+      .styled-select option {
         background: var(--card);
+      }
+
+      /* ── Wished product section ── */
+      .wished-section {
+        background: linear-gradient(135deg, #1e1828, #231a2e);
+        border: 1.5px solid #a855d440;
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 28px;
+      }
+      .wished-section .section-label {
+        color: var(--accent2);
+        margin-bottom: 8px;
+      }
+      .wished-hint {
+        font-size: 0.75rem;
+        color: var(--muted);
+        margin-bottom: 14px;
+        line-height: 1.5;
+      }
+      .wished-hint strong {
+        color: var(--accent);
+      }
+
+      /* Search-filter wrapper */
+      .wished-search-wrap {
+        position: relative;
+        margin-bottom: 10px;
+      }
+      .wished-search-wrap input[type="text"] {
+        width: 100%;
+        padding: 10px 14px 10px 36px;
+        background: var(--surface);
+        border: 1.5px solid var(--border);
+        border-radius: 10px;
+        font-family: "Nunito", sans-serif;
+        font-size: 0.85rem;
+        color: var(--text);
+        transition: border-color 0.2s;
+      }
+      .wished-search-wrap input[type="text"]::placeholder {
+        color: var(--muted);
+      }
+      .wished-search-wrap input[type="text"]:focus {
+        outline: none;
+        border-color: var(--accent2);
+      }
+      .wished-search-wrap .search-icon {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--muted);
+        font-size: 0.9rem;
+        pointer-events: none;
+      }
+
+      /* Dropdown result list */
+      .wished-dropdown {
+        display: none;
+        position: relative;
+        background: var(--surface);
+        border: 1.5px solid var(--accent2);
+        border-radius: 10px;
+        max-height: 220px;
+        overflow-y: auto;
+        z-index: 10;
+        scrollbar-width: thin;
+        scrollbar-color: var(--accent2) transparent;
+      }
+      .wished-dropdown.open {
+        display: block;
+      }
+      .wished-dropdown-item {
+        padding: 10px 14px;
+        font-size: 0.82rem;
+        color: var(--muted);
+        cursor: pointer;
+        border-bottom: 1px solid var(--border);
+        transition:
+          background 0.15s,
+          color 0.15s;
+        line-height: 1.4;
+      }
+      .wished-dropdown-item:last-child {
+        border-bottom: none;
+      }
+      .wished-dropdown-item:hover,
+      .wished-dropdown-item.selected {
+        background: linear-gradient(135deg, #a855d420, #e07bb515);
+        color: var(--text);
+      }
+      .wished-dropdown-item .item-brand {
+        font-size: 0.68rem;
+        color: var(--accent2);
+        font-weight: 700;
+      }
+      .wished-dropdown-item .item-name {
+        color: var(--text);
+      }
+      .wished-dropdown-item.brand-only-item {
+        background: linear-gradient(135deg, #1e1828, #231a2e);
+      }
+      .wished-dropdown-item.brand-only-item:hover {
+        background: linear-gradient(135deg, #a855d425, #e07bb515);
+      }
+
+      /* Selected product display */
+      .wished-selected-display {
+        display: none;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        background: linear-gradient(135deg, #1e2e20, #1a2820);
+        border: 1.5px solid #3a6040;
+        border-radius: 10px;
+        padding: 10px 14px;
+        margin-top: 8px;
+      }
+      .wished-selected-display.show {
+        display: flex;
+      }
+      .wished-selected-name {
+        font-size: 0.83rem;
+        color: var(--good);
+        font-weight: 600;
+        line-height: 1.4;
+      }
+      .wished-clear-btn {
+        background: transparent;
+        border: 1px solid #3a6040;
+        color: var(--muted);
+        font-size: 0.72rem;
+        padding: 3px 10px;
+        border-radius: 100px;
+        cursor: pointer;
+        font-family: "Nunito", sans-serif;
+        flex-shrink: 0;
+        transition: all 0.15s;
+      }
+      .wished-clear-btn:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+
+      /* No results */
+      .wished-no-results {
+        display: none;
+        font-size: 0.78rem;
+        color: var(--muted);
+        font-style: italic;
+        padding: 8px 0 2px;
+        text-align: center;
       }
 
       /* ── Submit ── */
@@ -284,8 +435,8 @@
         <div class="hero-badge">✦ AI-Powered Skincare</div>
         <h1>Skincare untuk<br /><em>Kondisi Kulitmu</em></h1>
         <p>
-          Ceritakan kondisi kulitmu sekarang — kami pilihkan produk<br />dengan
-          ingredients yang benar-benar kamu butuhkan.
+          Ceritakan kondisi kulitmu sekarang — kami pilihkan produk<br />
+          dengan ingredients yang benar-benar kamu butuhkan.
         </p>
       </div>
 
@@ -355,27 +506,72 @@
                 id="c_{{ key }}"
                 value="{{ key }}"
               />
-              <label for="c_{{ key }}">
-                <span class="dot"></span>
-                {{ label }}
-              </label>
+              <label for="c_{{ key }}"
+                ><span class="dot"></span>{{ label }}</label
+              >
             </div>
             {% endfor %}
           </div>
 
           <hr class="divider" />
 
-          <!-- Brand -->
-          <div class="section-label">🏷️ Filter Brand</div>
-          <select name="brand" class="brand-select">
-            <option value="All">Semua Brand</option>
-            {% for b in brands %}
-            <option value="{{ b }}">{{ b }}</option>
-            {% endfor %}
-          </select>
+          <!-- ★ Wished Product + Brand Filter (gabungan) ── -->
+          <div class="wished-section">
+            <div class="section-label">🔍 Cari Produk atau Brand</div>
+            <p class="wished-hint">
+              Opsional — Ketik nama <strong>produk spesifik</strong> yang kamu
+              inginkan, atau cukup ketik <strong>nama brand</strong> untuk
+              memfilter rekomendasi. Kami cek apakah produk pilihanmu cocok
+              dengan kulitmu.
+            </p>
+
+            <!-- Search box -->
+            <div class="wished-search-wrap">
+              <span class="search-icon">🔍</span>
+              <input
+                type="text"
+                id="wished-search"
+                placeholder="Cth: CeraVe, atau Cosrx Snail Mucin..."
+                autocomplete="off"
+              />
+            </div>
+
+            <!-- Dropdown result list -->
+            <div class="wished-dropdown" id="wished-dropdown"></div>
+
+            <!-- No results -->
+            <div class="wished-no-results" id="wished-no-results">
+              Produk tidak ditemukan — rekomendasi tetap diberikan tanpa filter
+              produk.
+            </div>
+
+            <!-- Selected display -->
+            <div class="wished-selected-display" id="wished-selected-display">
+              <span
+                class="wished-selected-name"
+                id="wished-selected-name"
+              ></span>
+              <button
+                type="button"
+                class="wished-clear-btn"
+                onclick="clearWished()"
+              >
+                ✕ Hapus
+              </button>
+            </div>
+
+            <!-- Hidden inputs -->
+            <input
+              type="hidden"
+              name="wished_product_id"
+              id="wished-product-id"
+              value=""
+            />
+            <input type="hidden" name="brand" id="wished-brand" value="" />
+          </div>
 
           <button type="submit" class="btn-submit">
-            Analisa & Rekomendasikan →
+            Analisa &amp; Rekomendasikan →
           </button>
         </form>
       </div>
@@ -385,5 +581,135 @@
         pertimbangan sekunder
       </p>
     </div>
+
+    <script>
+      // ── Data produk dari server ───────────────────────────────────────────
+      const ALL_PRODUCTS = {{ products_for_dropdown | tojson }};
+
+      // Kumpulkan semua brand unik dari data produk
+      const ALL_BRANDS = [...new Set(ALL_PRODUCTS.map(p => p.display.split(" — ")[0]))].sort();
+
+      const searchInput  = document.getElementById("wished-search");
+      const dropdown     = document.getElementById("wished-dropdown");
+      const noResults    = document.getElementById("wished-no-results");
+      const selectedDisp = document.getElementById("wished-selected-display");
+      const selectedName = document.getElementById("wished-selected-name");
+      const hiddenProdId = document.getElementById("wished-product-id");
+      const hiddenBrand  = document.getElementById("wished-brand");
+
+      let debounceTimer = null;
+
+      searchInput.addEventListener("input", () => {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(filterProducts, 200);
+      });
+
+      searchInput.addEventListener("focus", () => {
+        if (searchInput.value.trim().length >= 2) filterProducts();
+      });
+
+      // Saat form submit: jika user tidak pilih dari dropdown tapi ada teks,
+      // cek apakah teks cocok dengan brand → set sebagai brand filter
+      searchInput.closest("form").addEventListener("submit", () => {
+        if (!hiddenProdId.value && !hiddenBrand.value) {
+          const q = searchInput.value.trim().toLowerCase();
+          if (q.length >= 2) {
+            const brandMatch = ALL_BRANDS.find(b => b.toLowerCase() === q);
+            if (brandMatch) hiddenBrand.value = brandMatch;
+          }
+        }
+      });
+
+      document.addEventListener("click", (e) => {
+        if (!e.target.closest(".wished-search-wrap") && !e.target.closest("#wished-dropdown")) {
+          closeDropdown();
+        }
+      });
+
+      function filterProducts() {
+        const q = searchInput.value.trim().toLowerCase();
+        if (q.length < 2) { closeDropdown(); return; }
+
+        // Cari brand yang cocok persis (untuk brand-only shortcut)
+        const brandMatches = ALL_BRANDS
+          .filter(b => b.toLowerCase().startsWith(q))
+          .slice(0, 5);
+
+        // Cari produk spesifik
+        const productMatches = ALL_PRODUCTS
+          .filter(p => p.display.toLowerCase().includes(q))
+          .slice(0, 25);
+
+        if (brandMatches.length === 0 && productMatches.length === 0) {
+          dropdown.classList.remove("open");
+          noResults.style.display = "block";
+          return;
+        }
+
+        noResults.style.display = "none";
+
+        // Render brand shortcuts di atas, lalu produk
+        const brandHTML = brandMatches.map(b =>
+          `<div class="wished-dropdown-item brand-only-item"
+               onclick="selectBrand('${b.replace(/'/g, "\\'")}')">
+             <div class="item-brand">🏷️ ${b}</div>
+             <div class="item-name" style="font-size:0.72rem;opacity:0.65">Filter semua produk brand ini</div>
+           </div>`
+        ).join("");
+
+        // Separator jika ada keduanya
+        const sep = (brandMatches.length > 0 && productMatches.length > 0)
+          ? `<div style="padding:5px 14px;font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);border-top:1px solid var(--border);border-bottom:1px solid var(--border);background:var(--bg)">Produk Spesifik</div>`
+          : "";
+
+        const productHTML = productMatches.map(p => {
+          const parts = p.display.split(" — ");
+          const brand = parts[0] || "";
+          const name  = parts.slice(1).join(" — ") || p.display;
+          return `<div class="wished-dropdown-item"
+                       data-id="${p.product_id}"
+                       data-display="${p.display.replace(/"/g, "&quot;")}"
+                       onclick="selectProduct('${p.product_id}', this.dataset.display)">
+                    <div class="item-brand">${brand}</div>
+                    <div class="item-name">${name}</div>
+                  </div>`;
+        }).join("");
+
+        dropdown.innerHTML = brandHTML + sep + productHTML;
+        dropdown.classList.add("open");
+      }
+
+      function selectProduct(id, display) {
+        hiddenProdId.value       = id;
+        hiddenBrand.value        = "";          // clear brand filter
+        selectedName.textContent = display;
+        selectedDisp.classList.add("show");
+        searchInput.value = "";
+        closeDropdown();
+      }
+
+      function selectBrand(brand) {
+        hiddenBrand.value        = brand;
+        hiddenProdId.value       = "";          // clear product filter
+        selectedName.textContent = "🏷️ Brand: " + brand;
+        selectedDisp.classList.add("show");
+        searchInput.value = "";
+        closeDropdown();
+      }
+
+      function clearWished() {
+        hiddenProdId.value = "";
+        hiddenBrand.value  = "";
+        selectedDisp.classList.remove("show");
+        selectedName.textContent = "";
+        searchInput.value = "";
+        noResults.style.display = "none";
+      }
+
+      function closeDropdown() {
+        dropdown.classList.remove("open");
+        dropdown.innerHTML = "";
+      }
+    </script>
   </body>
 </html>
