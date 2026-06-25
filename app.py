@@ -246,14 +246,22 @@ def load_data() -> pd.DataFrame:
     logger.info("=" * 60)
 
     # ── 1. Products parquet ──────────────────────────────────────────────
-    products_path = os.path.join(MODEL_DIR, "products_skincare.parquet")
-    if not os.path.exists(products_path):
+    csv_path = os.path.join(BASE_DIR, "data", "product_info.csv")
+    if not os.path.exists(csv_path):
         raise FileNotFoundError(
-            f"products_skincare.parquet tidak ditemukan di {MODEL_DIR}. "
-            "Pastikan training notebook sudah dijalankan dan folder model/ tersedia."
+            f"product_info.csv tidak ditemukan di {csv_path}. "
+            "Pastikan file tersebut tersedia."
         )
-    _products_df = pd.read_parquet(products_path)
+    _products_df = pd.read_csv(csv_path)
     logger.info("  ✅ products_skincare: %d rows", len(_products_df))
+    if "secondary_category" in _products_df.columns:
+        _products_df["secondary_lower"] = (
+        _products_df["secondary_category"]
+        .fillna("")
+        .astype(str)
+        .str.lower()
+        .str.strip()
+    )
 
     # Pastikan kolom teks lowercase untuk matching
     for col in ["ingredients", "highlights", "product_name", "brand_name",
