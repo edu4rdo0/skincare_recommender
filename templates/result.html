@@ -724,6 +724,19 @@
         vertical-align: super;
         color: var(--gold);
       }
+      .ing-tag.avoid {
+        background: #2e1a1a;
+        border-color: #7a3030;
+        color: var(--warn);
+        font-weight: 600;
+        cursor: help;
+      }
+      .ing-tag.avoid::after {
+        content: "⚠";
+        font-size: 0.6rem;
+        margin-left: 3px;
+        vertical-align: super;
+      }
       .ing-tag.extra-hidden {
         display: none;
       }
@@ -996,6 +1009,10 @@
           Cocok untuk kondisi kulitmu
         </div>
         <div class="ing-legend-item">
+          <div class="legend-dot" style="background: var(--warn)"></div>
+          Perlu dihindari
+        </div>
+        <div class="ing-legend-item">
           <div class="legend-dot normal"></div>
           Ingredients lainnya
         </div>
@@ -1008,6 +1025,19 @@
           {% if ing_item.benefit %}<span class="ing-tooltip"
             >{{ ing_item.benefit }}</span
           >{% endif %}
+        </span>
+        {% elif ing_item.is_avoid %}
+        <span class="ing-tooltip-wrap {{ hc }}" data-pid="{{ pid }}">
+          <span class="ing-tag avoid">{{ ing_item.text }}</span>
+          <span
+            class="ing-tooltip"
+            style="
+              background: #2e1a1a;
+              border-color: #7a3030;
+              color: var(--warn);
+            "
+            >⚠ Perlu dihindari untuk jenis kulitmu</span
+          >
         </span>
         {% else %}
         <span class="ing-tag {{ hc }}" data-pid="{{ pid }}"

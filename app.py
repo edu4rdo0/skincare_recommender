@@ -668,6 +668,9 @@ def fill_slots(scored_df: pd.DataFrame, concerns: list, skin_type: str,
     sunscreen_count = 0
     result = {}
 
+    # Hitung boost/avoid untuk filter kecocokan ingredient
+    boost_ings, avoid_ings, _ = compute_concern_terms(concerns, skin_type)
+
     for slot_name, slot_keywords, n_take in ROUTINE_SLOTS:
         if slot_name == "sunscreen":
             n_take = SUNSCREEN_CAP
@@ -678,6 +681,22 @@ def fill_slots(scored_df: pd.DataFrame, concerns: list, skin_type: str,
         if candidates.empty:
             result[slot_name] = []
             continue
+
+        # ── Filter: Jika ada concern/skin_type, hanya tampilkan produk yang punya
+        #    setidaknya 1 ingredient cocok (need_score > 0) ATAU tidak ada avoid.
+        #    Produk dengan avoid ingredient tanpa satu pun boost ingredient → buang.
+        if boost_ings or avoid_ings:
+            def _is_compatible(r):
+                ings = r["ingredients"]
+                has_boost  = any(kw in ings for kw in boost_ings)
+                has_avoid  = any(kw in ings for kw in avoid_ings)
+                # Lolos jika: punya ingredient baik, ATAU tidak punya ingredient buruk
+                return has_boost or not has_avoid
+            compat_mask = candidates.apply(_is_compatible, axis=1)
+            if compat_mask.any():
+                # Ada kandidat yang kompatibel → filter ketat
+                candidates = candidates[compat_mask]
+            # else: tidak ada sama sekali → biarkan semua agar slot tidak kosong
 
         candidates["slot_score"]  = candidates.apply(lambda r: compute_slot_score(r, slot_keywords), axis=1)
         candidates["final_score"] = 0.70 * candidates["total_score"] + 0.30 * candidates["slot_score"]
@@ -790,18 +809,52 @@ def check_wished_product(product_id_str: str, skin_type: str, concerns: list,
 # Ingredient Annotation & Formatting
 # ---------------------------------------------------------------------------
 
-def annotate_ingredients(ingredients_list: list, matched_ings: list) -> list:
-    matched_lower = [m.lower() for m in matched_ings]
+def _ing_tokens(name: str) -> set:
+    """Tokenisasi nama ingredient menjadi set kata (lowercase, tanpa karakter khusus)."""
+    import re as _re
+    return set(_re.sub(r"[^a-z0-9 ]", " ", name.lower()).split())
+
+
+def annotate_ingredients(ingredients_list: list, matched_ings: list,
+                         boost_ings: list = None, avoid_ings: list = None) -> list:
+    """
+    Anotasi setiap ingredient:
+      - is_matched : ingredient mengandung kata kunci dari boost list ATAU matched_ings
+      - is_avoid   : ingredient mengandung kata kunci yang HARUS DIHINDARI
+      - benefit    : penjelasan manfaat (dari INGREDIENT_BENEFIT)
+
+    Matching menggunakan token-level agar lebih akurat:
+      kw harus muncul sebagai substring utuh dalam nama ingredient.
+    """
+    matched_lower = [m.lower().strip() for m in (matched_ings or [])]
+    boost_lower   = [b.lower().strip() for b in (boost_ings  or [])]
+    avoid_lower   = [a.lower().strip() for a in (avoid_ings  or [])]
+
+    all_positive = list(dict.fromkeys(matched_lower + boost_lower))  # deduplicate, preserve order
+
     result = []
     for ing in ingredients_list:
-        ing_lower = ing.lower()
-        is_matched = any(kw in ing_lower or ing_lower in kw for kw in matched_lower)
+        ing_lower = ing.lower().strip()
+
+        # Cek match positif: kw harus muncul sebagai substring penuh di nama ing
+        is_matched = any(kw and kw in ing_lower for kw in all_positive)
+
+        # Cek avoid
+        is_avoid = any(kw and kw in ing_lower for kw in avoid_lower)
+
+        # Benefit lookup
         benefit = ""
         for key, val in INGREDIENT_BENEFIT.items():
-            if key in ing_lower or ing_lower in key:
+            if key in ing_lower:
                 benefit = val
                 break
-        result.append({"text": ing, "is_matched": is_matched, "benefit": benefit})
+
+        result.append({
+            "text":       ing,
+            "is_matched": is_matched and not is_avoid,  # jangan hijau jika termasuk avoid
+            "is_avoid":   is_avoid,
+            "benefit":    benefit,
+        })
     return result
 
 
@@ -904,6 +957,9 @@ def format_product(row, idx, concerns: list) -> dict:
     ingredients_list= [ing.strip().title() for ing in raw_ingredients.split(",") if ing.strip()]
     matched_ings    = get_matched_ingredients(row, concerns)
 
+    # Hitung boost & avoid untuk anotasi ingredient yang lebih akurat
+    boost_ings, avoid_ings, _ = compute_concern_terms(concerns, skin_type)
+
     product_id_str = str(row.get("product_id", ""))
     review_stats   = build_review_stats(product_id_str)
 
@@ -932,7 +988,10 @@ def format_product(row, idx, concerns: list) -> dict:
         "ingredients_raw":       raw_ingredients,
         "reason":                generate_reason(row, concerns, skin_type),
         "product_id_str":        product_id_str,
-        "annotated_ingredients": annotate_ingredients(ingredients_list, matched_ings),
+        "annotated_ingredients": annotate_ingredients(
+            ingredients_list, matched_ings,
+            boost_ings=boost_ings, avoid_ings=avoid_ings
+        ),
     }
 
 
