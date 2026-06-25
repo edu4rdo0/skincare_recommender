@@ -16,7 +16,6 @@
         margin: 0;
         padding: 0;
       }
-
       :root {
         --bg: #1a1118;
         --surface: #241b22;
@@ -31,10 +30,8 @@
         --good: #6fcfa0;
         --warn: #f0a050;
         --star: #f0c060;
-        --info: #60b4f0;
         --danger: #f06060;
       }
-
       body {
         font-family: "Nunito", sans-serif;
         background: var(--bg);
@@ -42,7 +39,6 @@
         min-height: 100vh;
         padding: 48px 16px 80px;
       }
-
       body::before {
         content: "";
         position: fixed;
@@ -61,7 +57,6 @@
         pointer-events: none;
         z-index: 0;
       }
-
       .page-wrap {
         position: relative;
         z-index: 1;
@@ -69,7 +64,6 @@
         margin: 0 auto;
       }
 
-      /* ── Back ── */
       .back-btn {
         display: inline-flex;
         align-items: center;
@@ -90,7 +84,6 @@
         color: var(--accent);
       }
 
-      /* ── Header ── */
       .page-header {
         margin-bottom: 36px;
       }
@@ -128,9 +121,7 @@
         color: var(--accent);
       }
 
-      /* ══════════════════════════════════════════════════
-         ★ WISHED PRODUCT SECTION
-         ══════════════════════════════════════════════════ */
+      /* wished section header */
       .wished-section-header {
         display: flex;
         align-items: center;
@@ -149,7 +140,21 @@
         background: #a855d440;
       }
 
-      /* Compatible card — gold border glow */
+      /* card */
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 24px;
+        margin-bottom: 16px;
+        transition:
+          border-color 0.2s,
+          box-shadow 0.2s;
+      }
+      .card:hover {
+        border-color: #5d3a6a;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      }
       .card.wished-card {
         border-color: var(--accent2);
         box-shadow:
@@ -157,6 +162,29 @@
           0 8px 40px rgba(168, 85, 212, 0.2);
         margin-bottom: 40px;
       }
+      .card.incompatible-ref-card {
+        border-color: #5a2a2a;
+        opacity: 0.85;
+        margin-bottom: 40px;
+        position: relative;
+        overflow: hidden;
+      }
+      .card.incompatible-ref-card::before {
+        content: "Referensi Saja";
+        position: absolute;
+        top: 14px;
+        right: 14px;
+        background: #3a1a1a;
+        border: 1px solid #7a2a2a;
+        color: var(--danger);
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        padding: 3px 10px;
+        border-radius: 100px;
+      }
+
       .wished-badge {
         display: inline-flex;
         align-items: center;
@@ -173,13 +201,13 @@
         margin-bottom: 14px;
       }
 
-      /* ── Incompatibility Notice ── */
+      /* incompatible notice */
       .incompatible-notice {
         background: #2a1a1a;
         border: 1.5px solid #7a2a2a;
         border-radius: 20px;
         padding: 28px 28px 24px;
-        margin-bottom: 40px;
+        margin-bottom: 20px;
       }
       .incompatible-title {
         font-family: "Playfair Display", serif;
@@ -214,30 +242,7 @@
         color: var(--text);
       }
 
-      /* Warning list */
-      .warn-list {
-        display: flex;
-        flex-direction: column;
-        gap: 7px;
-        margin-bottom: 16px;
-      }
-      .warn-item {
-        display: flex;
-        align-items: flex-start;
-        gap: 9px;
-        background: #3a1a1a;
-        border: 1px solid #6a2a2a;
-        border-radius: 10px;
-        padding: 9px 14px;
-        font-size: 0.8rem;
-        color: var(--warn);
-        line-height: 1.5;
-      }
-      .warn-icon {
-        flex-shrink: 0;
-      }
-
-      /* Not-found notice */
+      /* not found */
       .not-found-notice {
         background: #1e1e2a;
         border: 1.5px solid #4a3a6a;
@@ -262,7 +267,80 @@
         line-height: 1.6;
       }
 
-      /* ── Slot heading ── */
+      /* no match notice */
+      .no-match-notice {
+        background: linear-gradient(135deg, #1e1828, #231a2e);
+        border: 1.5px solid #a855d440;
+        border-radius: 20px;
+        padding: 40px 28px;
+        margin-bottom: 40px;
+        text-align: center;
+      }
+      .no-match-notice .nm-icon {
+        font-size: 3rem;
+        margin-bottom: 16px;
+      }
+      .no-match-notice h3 {
+        font-family: "Playfair Display", serif;
+        font-size: 1.3rem;
+        color: var(--accent);
+        margin-bottom: 12px;
+      }
+      .no-match-notice p {
+        font-size: 0.85rem;
+        color: var(--muted);
+        line-height: 1.7;
+        max-width: 420px;
+        margin: 0 auto 20px;
+      }
+      .no-match-notice p strong {
+        color: var(--text);
+      }
+      .no-match-tips {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        text-align: left;
+        max-width: 380px;
+        margin: 0 auto;
+      }
+      .no-match-tip {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 10px 14px;
+        font-size: 0.8rem;
+        color: var(--muted);
+        line-height: 1.5;
+      }
+      .no-match-tip .tip-icon {
+        flex-shrink: 0;
+      }
+
+      /* warn list */
+      .warn-list {
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+        margin-bottom: 16px;
+      }
+      .warn-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 9px;
+        background: #3a1a1a;
+        border: 1px solid #6a2a2a;
+        border-radius: 10px;
+        padding: 9px 14px;
+        font-size: 0.8rem;
+        color: var(--warn);
+        line-height: 1.5;
+      }
+
+      /* slot heading */
       .slot-heading {
         display: flex;
         align-items: center;
@@ -280,23 +358,7 @@
         background: var(--border);
       }
 
-      /* ── Card ── */
-      .card {
-        background: var(--card);
-        border: 1px solid var(--border);
-        border-radius: 20px;
-        padding: 24px;
-        margin-bottom: 16px;
-        transition:
-          border-color 0.2s,
-          box-shadow 0.2s;
-      }
-      .card:hover {
-        border-color: #5d3a6a;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-      }
-
-      /* ── Card top ── */
+      /* card top */
       .card-top {
         display: flex;
         justify-content: space-between;
@@ -336,8 +398,6 @@
         border-color: #3a6040;
         color: var(--good);
       }
-
-      /* ── Rating box ── */
       .rating-box {
         text-align: right;
         flex-shrink: 0;
@@ -352,14 +412,13 @@
         color: var(--muted);
         margin-top: 2px;
       }
-
       .divider {
         border: none;
         border-top: 1px solid var(--border);
         margin: 18px 0;
       }
 
-      /* ── Reason box ── */
+      /* reason */
       .reason-box {
         background: var(--surface);
         border: 1px solid var(--border);
@@ -397,7 +456,7 @@
         color: var(--warn);
       }
 
-      /* ── Matched ingredients pills ── */
+      /* matched ings */
       .matched-ings {
         display: flex;
         flex-wrap: wrap;
@@ -414,34 +473,78 @@
         border-radius: 100px;
       }
 
-      /* ── Community Reviews ── */
+      /* ── Reviews collapsible (mirip ingredients) ── */
       .reviews-section {
-        background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: 14px;
-        padding: 16px 18px;
+        background: var(--card2);
+        border-radius: 12px;
+        padding: 14px 16px;
         margin-bottom: 14px;
       }
-      .reviews-header {
+      .reviews-toggle-btn {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-bottom: 14px;
-        flex-wrap: wrap;
-        gap: 8px;
+        width: 100%;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+        font-family: "Nunito", sans-serif;
+        gap: 10px;
       }
-      .reviews-title {
+      .reviews-toggle-left {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .reviews-label {
         font-size: 0.68rem;
         font-weight: 700;
         letter-spacing: 0.12em;
         text-transform: uppercase;
+        color: var(--muted);
+      }
+      .reviews-rating-peek {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .reviews-rating-peek .peek-stars {
+        color: var(--star);
+        font-size: 0.78rem;
+        letter-spacing: 1px;
+      }
+      .reviews-rating-peek .peek-num {
+        font-size: 0.78rem;
+        font-weight: 700;
         color: var(--gold);
+      }
+      .reviews-rating-peek .peek-count {
+        font-size: 0.7rem;
+        color: var(--muted);
+      }
+      .reviews-toggle-arrow {
+        font-size: 0.72rem;
+        color: var(--muted);
+        transition: transform 0.2s;
+        flex-shrink: 0;
+      }
+      .reviews-toggle-btn[aria-expanded="true"] .reviews-toggle-arrow {
+        transform: rotate(180deg);
+      }
+      .reviews-body {
+        display: none;
+        margin-top: 14px;
+      }
+      .reviews-body.open {
+        display: block;
       }
       .reviews-summary {
         display: flex;
         align-items: center;
         gap: 10px;
         flex-wrap: wrap;
+        margin-bottom: 14px;
       }
       .big-rating {
         font-family: "Playfair Display", serif;
@@ -460,7 +563,6 @@
         font-size: 1.05rem;
         letter-spacing: 2px;
       }
-
       .rating-dist {
         width: 100%;
         margin-bottom: 14px;
@@ -497,7 +599,6 @@
         text-align: right;
         flex-shrink: 0;
       }
-
       .recommend-badge {
         display: inline-flex;
         align-items: center;
@@ -511,14 +612,13 @@
         border-radius: 100px;
         margin-bottom: 14px;
       }
-
       .sample-reviews {
         display: flex;
         flex-direction: column;
         gap: 8px;
       }
       .review-card {
-        background: var(--card2);
+        background: var(--surface);
         border: 1px solid var(--border);
         border-radius: 10px;
         padding: 11px 14px;
@@ -557,7 +657,7 @@
         padding: 6px 0;
       }
 
-      /* ── Ingredients ── */
+      /* ingredients */
       .ing-section {
         background: var(--card2);
         border-radius: 12px;
@@ -596,7 +696,6 @@
       .legend-dot.normal {
         background: var(--border);
       }
-
       .ing-list {
         display: flex;
         flex-wrap: wrap;
@@ -617,7 +716,6 @@
         color: var(--good);
         font-weight: 700;
         cursor: help;
-        position: relative;
       }
       .ing-tag.highlight::after {
         content: "★";
@@ -629,7 +727,6 @@
       .ing-tag.extra-hidden {
         display: none;
       }
-
       .ing-tooltip-wrap {
         position: relative;
         display: inline-block;
@@ -667,7 +764,6 @@
       .ing-tooltip-wrap:hover .ing-tooltip {
         display: block;
       }
-
       .ing-more {
         background: transparent;
         border: 1px dashed var(--accent2);
@@ -686,7 +782,6 @@
         border-style: solid;
       }
 
-      /* ── Empty state ── */
       .empty-state {
         text-align: center;
         padding: 80px 20px;
@@ -700,9 +795,302 @@
         color: var(--muted);
         font-size: 0.9rem;
       }
+
+      /* ── Brand-pinned section ── */
+      .brand-pinned-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 0 0 16px;
+      }
+      .brand-pinned-header h2 {
+        font-family: "Playfair Display", serif;
+        font-size: 1.1rem;
+        white-space: nowrap;
+        color: var(--gold);
+      }
+      .brand-pinned-line {
+        flex: 1;
+        height: 1px;
+        background: linear-gradient(90deg, #f0c06050, transparent);
+      }
+      .card.brand-pinned-card {
+        border-color: var(--gold);
+        box-shadow:
+          0 0 0 1px #f0c06020,
+          0 6px 32px rgba(240, 192, 96, 0.12);
+      }
+      .brand-pinned-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: linear-gradient(135deg, #f0c06025, #e07bb515);
+        border: 1px solid var(--gold);
+        color: var(--gold);
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        padding: 4px 14px;
+        border-radius: 100px;
+        margin-bottom: 14px;
+      }
+
+      /* ── Enhanced rating in card-top ── */
+      .rating-box {
+        text-align: right;
+        flex-shrink: 0;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 10px 14px;
+        min-width: 90px;
+      }
+      .rating-score-big {
+        font-family: "Playfair Display", serif;
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--gold);
+        line-height: 1;
+      }
+      .rating-score-max {
+        font-size: 0.65rem;
+        color: var(--muted);
+      }
+
+      /* brand no-match notice */
+      .brand-no-match-notice {
+        background: linear-gradient(135deg, #1e1a2e, #231a1e);
+        border: 1.5px solid #5a3a6a;
+        border-radius: 16px;
+        padding: 24px 22px;
+        margin-bottom: 20px;
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+      }
+      .brand-no-match-icon {
+        font-size: 1.8rem;
+        flex-shrink: 0;
+        margin-top: 2px;
+      }
+      .brand-no-match-body {
+        flex: 1;
+      }
+      .brand-no-match-title {
+        font-family: "Playfair Display", serif;
+        font-size: 1rem;
+        color: var(--accent);
+        margin-bottom: 6px;
+      }
+      .brand-no-match-text {
+        font-size: 0.82rem;
+        color: var(--muted);
+        line-height: 1.65;
+      }
+      .brand-no-match-text strong {
+        color: var(--text);
+      }
     </style>
   </head>
   <body>
+    {# ══ MACROS — harus di atas sebelum digunakan ══ #} {%- macro
+    render_reviews(rs) %} {% set rid = loop.index if loop is defined else
+    range(100000)|random %}
+    <div class="reviews-section">
+      <button
+        class="reviews-toggle-btn"
+        aria-expanded="false"
+        onclick="toggleReviews('rev-{{ rid }}', this)"
+      >
+        <div class="reviews-toggle-left">
+          <span class="reviews-label">⭐ Ulasan Komunitas</span>
+          {% if rs and rs.avg_rating %}
+          <div class="reviews-rating-peek">
+            <span class="peek-stars"
+              >{% for i in range(5) %}{% if i < (rs.avg_rating|round|int) %}★{%
+              else %}☆{% endif %}{% endfor %}</span
+            >
+            <span class="peek-num">{{ "%.1f"|format(rs.avg_rating) }}</span>
+            <span class="peek-count">({{ rs.review_count|int }})</span>
+          </div>
+          {% else %}
+          <span
+            class="peek-count"
+            style="font-size: 0.7rem; color: var(--muted)"
+            >Belum ada rating</span
+          >
+          {% endif %}
+        </div>
+        <span class="reviews-toggle-arrow">▼</span>
+      </button>
+      <div class="reviews-body" id="rev-{{ rid }}">
+        {% if rs %}
+        <div class="reviews-summary">
+          <div>
+            <div class="big-rating">{{ "%.1f"|format(rs.avg_rating) }}</div>
+            <div class="big-stars">
+              {% for i in range(5) %}{% if i < (rs.avg_rating|round|int) %}★{%
+              else %}☆{% endif %}{% endfor %}
+            </div>
+          </div>
+          <div class="big-rating-sub">
+            dari
+            <strong style="color: var(--text)"
+              >{{ rs.review_count|int }}</strong
+            >
+            ulasan<br />pengguna nyata
+          </div>
+        </div>
+        {% if rs.recommend_pct is not none %}
+        <div class="recommend-badge">
+          👍 {{ "%.0f"|format(rs.recommend_pct) }}% pengguna merekomendasikan
+          produk ini
+        </div>
+        {% endif %} {% if rs.review_count > 0 %}
+        <div class="rating-dist">
+          {% set total = rs.review_count %}{% for star in [5,4,3,2,1] %}{% set
+          count = rs.rating_dist.get(star,0) %}{% set pct = (count/total*100) if
+          total>0 else 0 %}
+          <div class="dist-row">
+            <span class="dist-label">{{ star }}</span>
+            <div class="dist-bar-wrap">
+              <div class="dist-bar" style="width:{{ pct|round(1) }}%"></div>
+            </div>
+            <span class="dist-count">{{ count }}</span>
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %} {% if rs.sample_reviews %}
+        <div class="sample-reviews">
+          {% for rv in rs.sample_reviews %}
+          <div class="review-card">
+            <div class="review-card-top">
+              <span class="review-stars"
+                >{% for i in range(5) %}{% if i < rv.rating %}★{% else %}☆{%
+                endif %}{% endfor %}</span
+              >
+              {% if rv.skin_type and rv.skin_type != 'Unknown' %}<span
+                class="review-skin-badge"
+                >Kulit {{ rv.skin_type }}</span
+              >{% endif %}
+            </div>
+            <div class="review-text">"{{ rv.text }}"</div>
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %} {% else %}
+        <div class="no-reviews-note">
+          Data ulasan komunitas belum tersedia untuk produk ini.
+        </div>
+        {% endif %}
+      </div>
+    </div>
+    {%- endmacro %} {%- macro render_ingredients(annotated, pid) %}
+    <div class="ing-section">
+      <div class="ing-label">🌿 Ingredients</div>
+      {% if annotated %}
+      <div class="ing-legend">
+        <div class="ing-legend-item">
+          <div class="legend-dot matched"></div>
+          Cocok untuk kondisi kulitmu
+        </div>
+        <div class="ing-legend-item">
+          <div class="legend-dot normal"></div>
+          Ingredients lainnya
+        </div>
+      </div>
+      <div class="ing-list" id="ing-{{ pid }}">
+        {% for ing_item in annotated %}{% set hc = 'extra-hidden' if loop.index
+        > 14 else '' %} {% if ing_item.is_matched %}
+        <span class="ing-tooltip-wrap {{ hc }}" data-pid="{{ pid }}">
+          <span class="ing-tag highlight">{{ ing_item.text }}</span>
+          {% if ing_item.benefit %}<span class="ing-tooltip"
+            >{{ ing_item.benefit }}</span
+          >{% endif %}
+        </span>
+        {% else %}
+        <span class="ing-tag {{ hc }}" data-pid="{{ pid }}"
+          >{{ ing_item.text }}</span
+        >
+        {% endif %} {% endfor %} {% if annotated|length > 14 %}
+        <button
+          class="ing-more"
+          id="btn-{{ pid }}"
+          data-pid="{{ pid }}"
+          data-total="{{ annotated|length }}"
+          onclick="toggleIng('{{ pid }}', {{ annotated|length }})"
+        >
+          +{{ annotated|length - 14 }} lagi
+        </button>
+        {% endif %}
+      </div>
+      {% else %}
+      <p style="font-size: 0.82rem; color: var(--muted); font-style: italic">
+        Data ingredients tidak tersedia
+      </p>
+      {% endif %}
+    </div>
+    {%- endmacro %} {%- macro render_product_body(p, pid, label_text) %}
+    <div class="card-top">
+      <div>
+        <div class="product-brand">{{ p.brand_name }}</div>
+        <div class="product-name">{{ p.product_name }}</div>
+        <div class="meta-pills">
+          {% if p.category and p.category != '-' %}<span class="pill"
+            >{{ p.category }}</span
+          >{% endif %} {% if p.price and p.price != '-' %}<span
+            class="pill price"
+            >{{ p.price }}</span
+          >{% endif %}
+        </div>
+      </div>
+      <div class="rating-box">
+        {% if p.rating %}
+        <div class="stars">
+          {% for i in range(5) %}{% if i < p.rating_stars %}★{% else %}☆{% endif
+          %}{% endfor %}
+        </div>
+        <div class="rating-score-big">
+          {{ "%.1f"|format(p.rating) }}<span class="rating-score-max"> /5</span>
+        </div>
+        <div class="rating-num" style="font-size: 0.68rem; margin-top: 4px">
+          {{ p.reviews }} ulasan
+        </div>
+        {% else %}
+        <div class="rating-num" style="font-size: 0.7rem">
+          Belum ada<br />rating
+        </div>
+        {% endif %}
+      </div>
+    </div>
+    <hr class="divider" />
+    {% if p.reason_lines %}
+    <div class="reason-box">
+      <div class="reason-label">{{ label_text }}</div>
+      {% for line in p.reason_lines %}
+      <div class="reason-line {% if '⚠' in line %}warn{% endif %}">
+        {{ line|safe }}
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %} {% if p.warnings %}
+    <div class="warn-list">
+      {% for w in p.warnings %}
+      <div class="warn-item">
+        <span class="warn-icon">⚠️</span><span>{{ w }}</span>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %} {% if p.matched_ings %}
+    <div class="matched-ings">
+      {% for ing in p.matched_ings %}<span class="ing-match"
+        >✓ {{ ing|title }}</span
+      >{% endfor %}
+    </div>
+    {% endif %} {{ render_reviews(p.review_stats) }} {{
+    render_ingredients(p.annotated_ingredients, pid) }} {%- endmacro %} {# ══
+    PAGE CONTENT ══ #}
     <div class="page-wrap">
       <a href="/" class="back-btn">← Ubah Pencarian</a>
 
@@ -717,426 +1105,166 @@
         </div>
       </div>
 
-      {# ══════════════════════════════════════════════════ ★ WISHED PRODUCT
-      SECTION ══════════════════════════════════════════════════ #} {% if wished
-      %} {% if wished.get('found') == False %} {# ── Produk tidak ditemukan di
-      database ── #}
+      {# ══ WISHED PRODUCT — selalu di atas ══ #} {% if wished %} {% if
+      wished.get('found') == False %}
       <div class="not-found-notice">
         <div class="nf-icon">🔍</div>
         <h3>Produk Tidak Ditemukan</h3>
         <p>
-          Produk yang kamu pilih tidak kami temukan dalam database kami.<br />
-          Berikut adalah rekomendasi terbaik berdasarkan profil kulitmu.
+          Produk yang kamu pilih tidak kami temukan dalam database kami.<br />Berikut
+          adalah rekomendasi terbaik berdasarkan profil kulitmu.
         </p>
       </div>
 
-      {% elif wished.compatible %} {# ── Produk COCOK — tampilkan di section
-      terpisah ── #}
+      {% elif wished.compatible %}
       <div class="wished-section-header">
         <h2>💜 Produk Pilihanmu</h2>
         <div class="wished-section-line"></div>
       </div>
-
       <div class="card wished-card">
         <div class="wished-badge">✦ Cocok untuk Kulitmu</div>
-
-        <div class="card-top">
-          <div>
-            <div class="product-brand">{{ wished.brand_name }}</div>
-            <div class="product-name">{{ wished.product_name }}</div>
-            <div class="meta-pills">
-              {% if wished.category and wished.category != '-' %}<span
-                class="pill"
-                >{{ wished.category }}</span
-              >{% endif %} {% if wished.price and wished.price != '-' %}<span
-                class="pill price"
-                >{{ wished.price }}</span
-              >{% endif %}
-            </div>
-          </div>
-          <div class="rating-box">
-            {% if wished.rating %}
-            <div class="stars">
-              {% for i in range(5) %}{% if i < wished.rating_stars %}★{% else
-              %}☆{% endif %}{% endfor %}
-            </div>
-            <div class="rating-num">
-              {{ "%.1f"|format(wished.rating) }} / 5.0
-            </div>
-            <div class="rating-num" style="font-size: 0.68rem; margin-top: 2px">
-              {{ wished.reviews }} ulasan produk
-            </div>
-            {% endif %}
-          </div>
-        </div>
-
-        <hr class="divider" />
-
-        {% if wished.reason_lines %}
-        <div class="reason-box">
-          <div class="reason-label">💡 Mengapa Cocok untuk Kulitmu</div>
-          {% for line in wished.reason_lines %}
-          <div class="reason-line {% if '⚠' in line %}warn{% endif %}">
-            {{ line|safe }}
-          </div>
-          {% endfor %}
-        </div>
-        {% endif %} {% if wished.warnings %}
-        <div class="warn-list">
-          {% for w in wished.warnings %}
-          <div class="warn-item">
-            <span class="warn-icon">⚠️</span><span>{{ w }}</span>
-          </div>
-          {% endfor %}
-        </div>
-        {% endif %} {% if wished.matched_ings %}
-        <div class="matched-ings">
-          {% for ing in wished.matched_ings %}<span class="ing-match"
-            >✓ {{ ing|title }}</span
-          >{% endfor %}
-        </div>
-        {% endif %} {# Reviews #} {% set rs = wished.review_stats %}
-        <div class="reviews-section">
-          <div class="reviews-header">
-            <div class="reviews-title">⭐ Ulasan Komunitas</div>
-            {% if rs %}
-            <div class="reviews-summary">
-              <div>
-                <div class="big-rating">{{ "%.1f"|format(rs.avg_rating) }}</div>
-                <div class="big-stars">
-                  {% for i in range(5) %}{% if i < (rs.avg_rating|round|int)
-                  %}★{% else %}☆{% endif %}{% endfor %}
-                </div>
-              </div>
-              <div class="big-rating-sub">
-                dari
-                <strong style="color: var(--text)"
-                  >{{ rs.review_count|int }}</strong
-                >
-                ulasan<br />pengguna nyata
-              </div>
-            </div>
-            {% endif %}
-          </div>
-          {% if rs %} {% if rs.recommend_pct is not none %}
-          <div class="recommend-badge">
-            👍 {{ "%.0f"|format(rs.recommend_pct) }}% pengguna merekomendasikan
-            produk ini
-          </div>
-          {% endif %} {% if rs.review_count > 0 %}
-          <div class="rating-dist">
-            {% set total = rs.review_count %} {% for star in [5, 4, 3, 2, 1] %}
-            {% set count = rs.rating_dist.get(star, 0) %} {% set pct = (count /
-            total * 100) if total > 0 else 0 %}
-            <div class="dist-row">
-              <span class="dist-label">{{ star }}</span>
-              <div class="dist-bar-wrap">
-                <div class="dist-bar" style="width:{{ pct|round(1) }}%"></div>
-              </div>
-              <span class="dist-count">{{ count }}</span>
-            </div>
-            {% endfor %}
-          </div>
-          {% endif %} {% if rs.sample_reviews %}
-          <div class="sample-reviews">
-            {% for rv in rs.sample_reviews %}
-            <div class="review-card">
-              <div class="review-card-top">
-                <span class="review-stars"
-                  >{% for i in range(5) %}{% if i < rv.rating %}★{% else %}☆{%
-                  endif %}{% endfor %}</span
-                >
-                {% if rv.skin_type and rv.skin_type != 'Unknown' %}<span
-                  class="review-skin-badge"
-                  >Kulit {{ rv.skin_type }}</span
-                >{% endif %}
-              </div>
-              <div class="review-text">"{{ rv.text }}"</div>
-            </div>
-            {% endfor %}
-          </div>
-          {% endif %} {% else %}
-          <div class="no-reviews-note">
-            Data ulasan komunitas belum tersedia.
-          </div>
-          {% endif %}
-        </div>
-
-        {# Ingredients #}
-        <div class="ing-section">
-          <div class="ing-label">🌿 Ingredients</div>
-          {% if wished.annotated_ingredients %}
-          <div class="ing-legend">
-            <div class="ing-legend-item">
-              <div class="legend-dot matched"></div>
-              Cocok untuk kondisi kulitmu
-            </div>
-            <div class="ing-legend-item">
-              <div class="legend-dot normal"></div>
-              Ingredients lainnya
-            </div>
-          </div>
-          <div class="ing-list" id="ing-wished">
-            {% for ing_item in wished.annotated_ingredients %} {% set
-            hidden_class = 'extra-hidden' if loop.index > 14 else '' %} {% if
-            ing_item.is_matched %}
-            <span class="ing-tooltip-wrap {{ hidden_class }}" data-pid="wished">
-              <span class="ing-tag highlight">{{ ing_item.text }}</span>
-              {% if ing_item.benefit %}<span class="ing-tooltip"
-                >{{ ing_item.benefit }}</span
-              >{% endif %}
-            </span>
-            {% else %}
-            <span class="ing-tag {{ hidden_class }}" data-pid="wished"
-              >{{ ing_item.text }}</span
-            >
-            {% endif %} {% endfor %} {% if wished.annotated_ingredients|length >
-            14 %}
-            <button
-              class="ing-more"
-              id="btn-wished"
-              data-pid="wished"
-              data-total="{{ wished.annotated_ingredients|length }}"
-              onclick="toggleIng('wished', {{ wished.annotated_ingredients|length }})"
-            >
-              +{{ wished.annotated_ingredients|length - 14 }} lagi
-            </button>
-            {% endif %}
-          </div>
-          {% else %}
-          <p
-            style="font-size: 0.82rem; color: var(--muted); font-style: italic"
-          >
-            Data ingredients tidak tersedia
-          </p>
-          {% endif %}
-        </div>
+        {{ render_product_body(wished, 'wished', '💡 Mengapa Cocok untuk
+        Kulitmu') }}
       </div>
-      {# end wished-card #} {% else %} {# ── Produk TIDAK COCOK — tampilkan
-      notifikasi ── #}
+
+      {% else %}
       <div class="wished-section-header">
         <h2>💜 Produk Pilihanmu</h2>
         <div class="wished-section-line"></div>
       </div>
-
       <div class="incompatible-notice">
         <div class="incompatible-title">
           ⚠️ Produk Ini Kurang Cocok untuk Kulitmu
         </div>
         <div class="incompatible-brand">{{ wished.brand_name }}</div>
         <div class="incompatible-product-name">{{ wished.product_name }}</div>
-
         <p class="incompatible-body">
           Berdasarkan analisis ingredients, produk
           <strong>{{ wished.product_name }}</strong> dari
           <strong>{{ wished.brand_name }}</strong> mengandung beberapa bahan
           yang <strong>kurang ideal</strong> untuk kulit bertipe
-          <strong>{{ skin_type }}</strong>
-          {% if user_concerns %} dengan concern {{ user_concerns | join(', ')
-          }}{% endif %}.
+          <strong>{{ skin_type }}</strong>{% if user_concerns %} dengan concern
+          {{ user_concerns|join(', ') }}{% endif %}.
         </p>
-
         {% if wished.warnings %}
         <div class="warn-list">
           {% for w in wished.warnings %}
-          <div class="warn-item">
-            <span class="warn-icon">⚠️</span><span>{{ w }}</span>
-          </div>
+          <div class="warn-item"><span>⚠️</span><span>{{ w }}</span></div>
           {% endfor %}
         </div>
         {% endif %}
-
         <p class="incompatible-body" style="margin-top: 4px">
-          Kami tetap menyertakan produk ini di bawah sebagai referensi, namun
-          <strong>rekomendasi terbaik</strong> untuk profilmu ada di daftar
-          berikut. 👇
+          Produk ini tetap ditampilkan di bawah sebagai
+          <strong>referensi</strong>. Rekomendasi yang lebih sesuai untuk
+          profilmu ada di bagian selanjutnya. 👇
         </p>
       </div>
-      {% endif %} {% endif %} {# end wished block #} {#
-      ══════════════════════════════════════════════════ ROUTINE RECOMMENDATIONS
-      ══════════════════════════════════════════════════ #} {% if
-      recommendations %} {% set ns = namespace(current_slot='') %} {% for p in
-      recommendations %} {% if p.slot_label != ns.current_slot %} {% set
-      ns.current_slot = p.slot_label %}
+      {# card referensi produk tidak cocok #}
+      <div class="card incompatible-ref-card">
+        {{ render_product_body(wished, 'wished-ref', '📋 Detail Produk') }}
+      </div>
+      {% endif %} {% endif %} {# ══ ROUTINE RECOMMENDATIONS ══ #} {# Pisahkan
+      produk brand pilihan dari rekomendasi umum #} {% if recommendations %} {%
+      set brand_products = [] %} {% set other_products = [] %} {% if brand %} {%
+      for p in recommendations %} {% if p.brand_name and p.brand_name|lower ==
+      brand|lower %} {% set _ = brand_products.append(p) %} {% else %} {% set _
+      = other_products.append(p) %} {% endif %} {% endfor %} {% else %} {% for p
+      in recommendations %} {% set _ = other_products.append(p) %} {% endfor %}
+      {% endif %} {# ── Produk dari Brand Pilihan — paling atas, sorted by
+      rating ── #} {% if brand_products %}
+      <div class="brand-pinned-header">
+        <h2>🏷️ Dari Brand {{ brand }}</h2>
+        <div class="brand-pinned-line"></div>
+      </div>
+      {% for p in brand_products | sort(attribute='rating', reverse=True) %}
+      <div class="card brand-pinned-card">
+        <div class="brand-pinned-badge">
+          🏷️ Brand Pilihanmu · Rating {{ "%.1f"|format(p.rating) if p.rating
+          else "–" }}/5
+        </div>
+        {{ render_product_body(p, 'brand-' ~ loop.index, '💡 Mengapa
+        Direkomendasikan') }}
+      </div>
+      {% endfor %} {% elif brand %} {# Brand dipilih tapi tidak ada produk yang
+      cocok dengan kondisi kulit #}
+      <div class="brand-pinned-header">
+        <h2>🏷️ Dari Brand {{ brand }}</h2>
+        <div class="brand-pinned-line"></div>
+      </div>
+      <div class="brand-no-match-notice">
+        <div class="brand-no-match-icon">🔍</div>
+        <div class="brand-no-match-body">
+          <div class="brand-no-match-title">
+            Tidak Ada Produk {{ brand }} yang Cocok
+          </div>
+          <p class="brand-no-match-text">
+            Sayangnya, kami tidak menemukan produk dari
+            <strong>{{ brand }}</strong> yang sesuai dengan profil kulitmu
+            (<strong>{{ skin_type }}</strong>{% if user_concerns %}, concern:
+            <strong>{{ user_concerns|join(', ') }}</strong>{% endif %}).
+            <br /><br />
+            Ini bisa berarti produk {{ brand }} dalam database kami tidak
+            mengandung ingredients yang direkomendasikan untuk kondisi kulitmu
+            saat ini, atau formulanya kurang ideal untuk tipe kulit {{ skin_type
+            }}. Rekomendasi alternatif dari brand lain yang lebih sesuai
+            tersedia di bawah. 👇
+          </p>
+        </div>
+      </div>
+      {% endif %} {# ── Rekomendasi Lainnya — dikelompok per slot, sorted by
+      rating ── #} {% if other_products %} {% set ns =
+      namespace(current_slot='', idx=0) %} {% set seen_slots = [] %} {% for p in
+      other_products %} {% if p.slot_label not in seen_slots %} {% set _ =
+      seen_slots.append(p.slot_label) %} {% endif %} {% endfor %} {% for slot in
+      seen_slots %}
       <div class="slot-heading">
-        <h2>{{ p.slot_label }}</h2>
+        <h2>{{ slot }}</h2>
         <div class="slot-line"></div>
       </div>
-      {% endif %}
-
+      {% set ns.idx = ns.idx + 1 %} {% for p in other_products |
+      selectattr('slot_label', 'equalto', slot) | sort(attribute='rating',
+      reverse=True) %}
       <div class="card">
-        <div class="card-top">
-          <div>
-            <div class="product-brand">{{ p.brand_name }}</div>
-            <div class="product-name">{{ p.product_name }}</div>
-            <div class="meta-pills">
-              {% if p.category and p.category != '-' %}<span class="pill"
-                >{{ p.category }}</span
-              >{% endif %} {% if p.price and p.price != '-' %}<span
-                class="pill price"
-                >{{ p.price }}</span
-              >{% endif %}
-            </div>
-          </div>
-          <div class="rating-box">
-            {% if p.rating %}
-            <div class="stars">
-              {% for i in range(5) %}{% if i < p.rating_stars %}★{% else %}☆{%
-              endif %}{% endfor %}
-            </div>
-            <div class="rating-num">{{ "%.1f"|format(p.rating) }} / 5.0</div>
-            <div class="rating-num" style="font-size: 0.68rem; margin-top: 2px">
-              {{ p.reviews }} ulasan produk
-            </div>
-            {% else %}
-            <div class="rating-num" style="font-size: 0.7rem">
-              Belum ada<br />rating
-            </div>
-            {% endif %}
-          </div>
-        </div>
-
-        <hr class="divider" />
-
-        {% if p.reason_lines %}
-        <div class="reason-box">
-          <div class="reason-label">💡 Mengapa Direkomendasikan</div>
-          {% for line in p.reason_lines %}
-          <div class="reason-line {% if '⚠' in line %}warn{% endif %}">
-            {{ line|safe }}
-          </div>
-          {% endfor %}
-        </div>
-        {% endif %} {% if p.matched_ings %}
-        <div class="matched-ings">
-          {% for ing in p.matched_ings %}<span class="ing-match"
-            >✓ {{ ing|title }}</span
-          >{% endfor %}
-        </div>
-        {% endif %} {# Community Reviews #} {% set rs = p.review_stats %}
-        <div class="reviews-section">
-          <div class="reviews-header">
-            <div class="reviews-title">⭐ Ulasan Komunitas</div>
-            {% if rs %}
-            <div class="reviews-summary">
-              <div>
-                <div class="big-rating">{{ "%.1f"|format(rs.avg_rating) }}</div>
-                <div class="big-stars">
-                  {% for i in range(5) %}{% if i < (rs.avg_rating|round|int)
-                  %}★{% else %}☆{% endif %}{% endfor %}
-                </div>
-              </div>
-              <div class="big-rating-sub">
-                dari
-                <strong style="color: var(--text)"
-                  >{{ rs.review_count|int }}</strong
-                >
-                ulasan<br />pengguna nyata
-              </div>
-            </div>
-            {% endif %}
-          </div>
-          {% if rs %} {% if rs.recommend_pct is not none %}
-          <div class="recommend-badge">
-            👍 {{ "%.0f"|format(rs.recommend_pct) }}% pengguna merekomendasikan
-            produk ini
-          </div>
-          {% endif %} {% if rs.review_count > 0 %}
-          <div class="rating-dist">
-            {% set total = rs.review_count %} {% for star in [5, 4, 3, 2, 1] %}
-            {% set count = rs.rating_dist.get(star, 0) %} {% set pct = (count /
-            total * 100) if total > 0 else 0 %}
-            <div class="dist-row">
-              <span class="dist-label">{{ star }}</span>
-              <div class="dist-bar-wrap">
-                <div class="dist-bar" style="width:{{ pct|round(1) }}%"></div>
-              </div>
-              <span class="dist-count">{{ count }}</span>
-            </div>
-            {% endfor %}
-          </div>
-          {% endif %} {% if rs.sample_reviews %}
-          <div class="sample-reviews">
-            {% for rv in rs.sample_reviews %}
-            <div class="review-card">
-              <div class="review-card-top">
-                <span class="review-stars"
-                  >{% for i in range(5) %}{% if i < rv.rating %}★{% else %}☆{%
-                  endif %}{% endfor %}</span
-                >
-                {% if rv.skin_type and rv.skin_type != 'Unknown' %}<span
-                  class="review-skin-badge"
-                  >Kulit {{ rv.skin_type }}</span
-                >{% endif %}
-              </div>
-              <div class="review-text">"{{ rv.text }}"</div>
-            </div>
-            {% endfor %}
-          </div>
-          {% endif %} {% else %}
-          <div class="no-reviews-note">
-            Data ulasan komunitas belum tersedia untuk produk ini.
-          </div>
-          {% endif %}
-        </div>
-
-        {# Ingredients #}
-        <div class="ing-section">
-          <div class="ing-label">🌿 Ingredients</div>
-          {% if p.annotated_ingredients %}
-          <div class="ing-legend">
-            <div class="ing-legend-item">
-              <div class="legend-dot matched"></div>
-              Cocok untuk kondisi kulitmu
-            </div>
-            <div class="ing-legend-item">
-              <div class="legend-dot normal"></div>
-              Ingredients lainnya
-            </div>
-          </div>
-          {% set pid = loop.index %}
-          <div class="ing-list" id="ing-{{ pid }}">
-            {% for ing_item in p.annotated_ingredients %} {% set hidden_class =
-            'extra-hidden' if loop.index > 14 else '' %} {% if
-            ing_item.is_matched %}
+        {{ render_product_body(p, slot ~ '-' ~ loop.index, '💡 Mengapa
+        Direkomendasikan') }}
+      </div>
+      {% endfor %} {% endfor %} {% endif %} {% elif wished and
+      wished.get('found') != False %} {# Ada wished product tapi tidak ada
+      rekomendasi lain yang cocok #}
+      <div class="no-match-notice">
+        <div class="nm-icon">🔬</div>
+        <h3>Tidak Ada Rekomendasi Lain yang Cocok</h3>
+        <p>
+          Kami tidak menemukan produk lain yang sesuai dengan kombinasi
+          <strong>kulit {{ skin_type }}</strong>{% if user_concerns %} dan
+          concern <strong>{{ user_concerns|join(', ') }}</strong>{% endif %}
+          dalam database kami saat ini.
+        </p>
+        <div class="no-match-tips">
+          <div class="no-match-tip">
+            <span class="tip-icon">🎯</span>
             <span
-              class="ing-tooltip-wrap {{ hidden_class }}"
-              data-pid="{{ pid }}"
+              >Coba kurangi jumlah concern — semakin banyak filter, semakin
+              sedikit produk yang lolos</span
             >
-              <span class="ing-tag highlight" title="{{ ing_item.benefit }}"
-                >{{ ing_item.text }}</span
-              >
-              {% if ing_item.benefit %}<span class="ing-tooltip"
-                >{{ ing_item.benefit }}</span
-              >{% endif %}
-            </span>
-            {% else %}
-            <span class="ing-tag {{ hidden_class }}" data-pid="{{ pid }}"
-              >{{ ing_item.text }}</span
-            >
-            {% endif %} {% endfor %} {% if p.annotated_ingredients|length > 14
-            %}
-            <button
-              class="ing-more"
-              id="btn-{{ pid }}"
-              data-pid="{{ pid }}"
-              data-total="{{ p.annotated_ingredients|length }}"
-              onclick="toggleIng({{ pid }}, {{ p.annotated_ingredients|length }})"
-            >
-              +{{ p.annotated_ingredients|length - 14 }} lagi
-            </button>
-            {% endif %}
           </div>
-          {% else %}
-          <p
-            style="font-size: 0.82rem; color: var(--muted); font-style: italic"
-          >
-            Data ingredients tidak tersedia
-          </p>
-          {% endif %}
+          <div class="no-match-tip">
+            <span class="tip-icon">🏷️</span>
+            <span
+              >Hapus filter brand agar rekomendasi mencakup semua brand</span
+            >
+          </div>
+          <div class="no-match-tip">
+            <span class="tip-icon">🌿</span>
+            <span
+              >Coba pilih jenis kulit yang berbeda — beberapa produk
+              dikategorikan berbeda di database</span
+            >
+          </div>
         </div>
       </div>
-      {% endfor %} {% else %}
+
+      {% else %}
       <div class="empty-state">
         <h2>Tidak ada produk ditemukan</h2>
         <p>Coba ubah filter, lalu cari lagi.</p>
@@ -1162,6 +1290,12 @@
         });
         btn.textContent = open ? "Sembunyikan" : "+" + (total - 14) + " lagi";
         btn.dataset.open = open ? "1" : "0";
+      }
+
+      function toggleReviews(bodyId, btn) {
+        const body = document.getElementById(bodyId);
+        const isOpen = body.classList.toggle("open");
+        btn.setAttribute("aria-expanded", isOpen ? "true" : "false");
       }
     </script>
   </body>
